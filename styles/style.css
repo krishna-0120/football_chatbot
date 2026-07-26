@@ -1,32 +1,132 @@
+/* ---------------- APP ---------------- */
+
 .stApp{
-    background:#0E1117;
+    background:#F5F7FB;
+    color:#1F2937;
 }
+
+/* ---------------- SIDEBAR ---------------- */
 
 section[data-testid="stSidebar"]{
-    background:#161B22;
+    background:#FFFFFF;
+    border-right:1px solid #E5E7EB;
+    padding-top:15px;
 }
 
+/* ---------------- HEADINGS ---------------- */
+
 h1{
-    color:#00FF88;
+    color:#2563EB;
     font-weight:700;
 }
 
-.stChatMessage{
-    border-radius:14px;
-    padding:12px;
+h2,h3{
+    color:#1F2937;
 }
+
+/* ---------------- CHAT ---------------- */
+
+.stChatMessage{
+    background:#FFFFFF;
+    border:1px solid #E5E7EB;
+    border-radius:16px;
+    padding:16px;
+    margin:12px 0;
+    box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+
+/* ---------------- CHAT INPUT ---------------- */
+
+div[data-testid="stChatInput"]{
+    background:#FFFFFF;
+    border-radius:12px;
+    border:1px solid #D1D5DB;
+}
+
+/* ---------------- BUTTONS ---------------- */
 
 .stButton>button{
     width:100%;
     border-radius:10px;
-    margin-top:5px;
+    border:none;
+    background:#2563EB;
+    color:white;
+    font-weight:600;
+    padding:10px;
+    transition:.2s;
 }
+
+.stButton>button:hover{
+    background:#1D4ED8;
+    transform:translateY(-2px);
+}
+
+/* ---------------- DOWNLOAD BUTTON ---------------- */
 
 .stDownloadButton>button{
     width:100%;
     border-radius:10px;
+    background:#16A34A;
+    color:white;
+    border:none;
+    font-weight:600;
 }
 
+.stDownloadButton>button:hover{
+    background:#15803D;
+}
+
+/* ---------------- METRIC ---------------- */
+
 div[data-testid="stMetric"]{
-    text-align:center;
+    background:white;
+    border-radius:12px;
+    border:1px solid #E5E7EB;
+    padding:15px;
+}
+
+/* ---------------- INPUT ---------------- */
+
+input{
+    border-radius:10px !important;
+}
+
+/* ---------------- SCROLLBAR ---------------- */
+
+::-webkit-scrollbar{
+    width:8px;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#C5CAD3;
+    border-radius:10px;
+}
+
+/* ---------------- MOBILE ---------------- */
+
+@media (max-width:768px){
+
+    h1{
+        font-size:30px;
+    }
+
+    .stChatMessage{
+        padding:12px;
+        font-size:15px;
+    }
+
+}
+
+/* ---------------- HIDE STREAMLIT ---------------- */
+
+#MainMenu{
+    visibility:hidden;
+}
+
+footer{
+    visibility:hidden;
+}
+
+header{
+    visibility:hidden;
 }

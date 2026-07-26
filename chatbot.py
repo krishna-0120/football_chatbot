@@ -18,15 +18,18 @@ from intent import (
 client = Groq(api_key=GROQ_API_KEY)
 
 SYSTEM_PROMPT = """
-You are FootballGPT.
+You are FootballGPT, an expert football assistant.
 
-You are an expert football assistant.
-
-Answer football questions accurately and concisely.
+Guidelines:
+- Answer football-related questions accurately and clearly.
+- Keep responses concise but informative.
+- Use bullet points when appropriate.
+- If the question is not related to football, politely answer it normally.
 """
 
 
 def ask_groq(user_message):
+    """Send general football questions to Groq."""
 
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
@@ -47,41 +50,49 @@ def ask_groq(user_message):
 
 
 def get_response(messages):
+    """Route user requests to either Football API or Groq."""
 
     user_input = messages[-1]["content"]
 
     intent = detect_intent(user_input)
-
     team = detect_team(user_input)
-
     league = detect_league(user_input)
 
-    if intent == "team_info":
+    try:
 
-        if team:
+        if intent == "team_info":
+
+            if not team:
+                return "⚠️ Please mention a supported football team."
+
             return get_team_info(team)
 
-        return "Please specify a supported team."
+        elif intent == "last_matches":
 
-    elif intent == "last_matches":
+            if not team:
+                return "⚠️ Please mention a supported football team."
 
-        if team:
             return get_last_matches(team)
 
-        return "Please specify a supported team."
+        elif intent == "next_matches":
 
-    elif intent == "next_matches":
+            if not team:
+                return "⚠️ Please mention a supported football team."
 
-        if team:
             return get_next_matches(team)
 
-        return "Please specify a supported team."
+        elif intent == "standings":
 
-    elif intent == "standings":
+            if not league:
+                return "⚠️ Please mention a supported league."
 
-        if league:
             return get_league_table(league)
 
-        return "Please specify a supported league."
+        # Everything else goes to Groq
+        return ask_groq(user_input)
 
-    return ask_groq(user_input)
+    except Exception:
+        return (
+            "⚠️ Sorry, I couldn't retrieve that information right now.\n\n"
+            "Please check your internet connection or try again in a few seconds."
+        )

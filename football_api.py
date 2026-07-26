@@ -39,16 +39,29 @@ LEAGUES = {
 }
 
 
+
 def api_request(endpoint):
-    response = requests.get(
-        BASE_URL + endpoint,
-        headers=HEADERS,
-        timeout=20
-    )
+    try:
+        response = requests.get(
+            BASE_URL + endpoint,
+            headers=HEADERS,
+            timeout=20
+        )
 
-    response.raise_for_status()
+        response.raise_for_status()
+        return response.json()
 
-    return response.json()
+    except requests.exceptions.Timeout:
+        return {"error": "The request timed out. Please try again."}
+
+    except requests.exceptions.ConnectionError:
+        return {"error": "Unable to connect to Football-Data API. Please check your internet connection."}
+
+    except requests.exceptions.HTTPError as e:
+        return {"error": f"API Error: {e.response.status_code}"}
+
+    except Exception as e:
+        return {"error": str(e)}
 
 
 def get_team_id(team_name):
@@ -62,7 +75,10 @@ def get_team_info(team_name):
     if not team_id:
         return "Team not supported."
 
-    team = api_request(f"/teams/{team_id}")
+    team = api_request(f"/competitions/{code}/standings")
+
+    if "error" in team:
+        return f"⚠️ {team['error']}"
 
     return f"""
 ## {team["name"]}
@@ -87,6 +103,9 @@ def get_last_matches(team_name):
         return "Team not supported."
 
     data = api_request(f"/teams/{team_id}/matches?status=FINISHED&limit=5")
+
+    if "error" in data:
+        return f"⚠️ {data['error']}"
 
     matches = data["matches"]
 
@@ -125,6 +144,9 @@ def get_next_matches(team_name):
 
     data = api_request(f"/teams/{team_id}/matches?status=SCHEDULED&limit=5")
 
+    if "error" in data:
+        return f"⚠️ {data['error']}"
+
     matches = data["matches"]
 
     if not matches:
@@ -158,6 +180,9 @@ def get_league_table(league):
         return "League not supported."
 
     data = api_request(f"/competitions/{code}/standings")
+
+    if "error" in data:
+        return f"⚠️ {data['error']}"
 
     table = data["standings"][0]["table"]
 

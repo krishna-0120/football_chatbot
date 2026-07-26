@@ -2,26 +2,27 @@ import streamlit as st
 from chatbot import get_response
 from utils import export_chat
 
+# ---------------- PAGE CONFIG ---------------- #
 
 st.set_page_config(
     page_title="Football AI Assistant",
     page_icon="⚽",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-
+# ---------------- LOAD CSS ---------------- #
 
 def load_css():
     with open("styles/style.css") as f:
         st.markdown(
             f"<style>{f.read()}</style>",
-            unsafe_allow_html=True,
+            unsafe_allow_html=True
         )
-
 
 load_css()
 
-
+# ---------------- SESSION STATE ---------------- #
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -29,32 +30,38 @@ if "messages" not in st.session_state:
 if "quick_prompt" not in st.session_state:
     st.session_state.quick_prompt = None
 
-
+# ---------------- SIDEBAR ---------------- #
 
 with st.sidebar:
 
-    st.title("⚽ Football AI")
-
-    st.caption("Your Personal Football Assistant")
-
-    st.divider()
-
-    st.metric(
-        "Messages",
-        len(st.session_state.messages)
+    st.markdown(
+        """
+        <h2 style="color:#1F2937; margin-bottom:0;">
+            ⚽ Football AI
+        </h2>
+            Your Personal Football Assistant
+        """,
+        unsafe_allow_html=True
     )
 
     st.divider()
 
-    st.subheader("Quick Questions")
+    st.metric(
+        label="Messages",
+        value=len(st.session_state.messages)
+    )
+
+    st.divider()
+
+    st.subheader("🔥 Quick Questions")
 
     quick_questions = [
-    "Barcelona team info",
-    "Explain the offside rule",
-    "Premier League standings",
-    "Who has won the most Champions League titles?",
-    "Top 10 football players of all time"
-]
+        "🏆 Premier League Standings",
+        "⚽ Barcelona Team Info",
+        "📅 Liverpool Fixtures",
+        "👑 Lionel Messi",
+        "🚩 Explain Offside"
+    ]
 
     for question in quick_questions:
         if st.button(question):
@@ -63,10 +70,10 @@ with st.sidebar:
     st.divider()
 
     st.download_button(
-        label="📄 Export Chat",
+        "📄 Export Chat",
         data=export_chat(st.session_state.messages),
         file_name="football_chat.txt",
-        mime="text/plain",
+        mime="text/plain"
     )
 
     if st.button("🗑 Clear Chat"):
@@ -74,57 +81,85 @@ with st.sidebar:
         st.session_state.quick_prompt = None
         st.rerun()
 
-
-
-st.title("⚽ Football AI Assistant")
+# ---------------- HEADER ---------------- #
 
 st.markdown(
-    "Ask me anything about football. "
-    "From World Cups to tactics, players, clubs and history."
+    """
+    <div style="text-align:center; margin-top:10px; margin-bottom:25px;">
+        <h1 style="
+            color:#2563EB;
+            margin-bottom:5px;
+            font-size:48px;
+            font-weight:700;
+        ">
+            ⚽ Football AI Assistant
+        </h1>
+
+            Powered by Groq + Football-Data API
+    </div>
+    """,
+    unsafe_allow_html=True
 )
 
-
+# ---------------- WELCOME CARD ---------------- #
 
 if len(st.session_state.messages) == 0:
 
-    st.info(
+    st.markdown(
         """
-### Welcome!
+        <div style="
+            background:white;
+            border:1px solid #E5E7EB;
+            border-radius:14px;
+            padding:20px;
+            margin-bottom:20px;
+            box-shadow:0 2px 8px rgba(0,0,0,.05);
+        ">
 
-You can ask questions about:
+        <h3 style="margin-top:0;">
+            👋 Welcome!
+        </h3>
 
-- 🏆 FIFA World Cup
-- ⚽ UEFA Champions League
-- 👑 Lionel Messi & Cristiano Ronaldo
-- 📊 Football tactics
-- 🎯 Rules of football
-- 🌍 International football
-- 🏅 Club football
+        <p>
+            Ask me anything about football.
+        </p>
 
-Or use one of the quick questions in the sidebar.
-"""
+        <b>Popular questions</b>
+
+        <ul>
+            <li>🏆 Premier League Standings</li>
+            <li>⚽ Barcelona Team Info</li>
+            <li>📅 Liverpool Fixtures</li>
+            <li>👑 Who is Lionel Messi?</li>
+            <li>🚩 Explain the Offside Rule</li>
+        </ul>
+
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
-
+# ---------------- CHAT HISTORY ---------------- #
 
 for message in st.session_state.messages:
 
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+# ---------------- CHAT INPUT ---------------- #
 
+prompt = st.chat_input("Ask anything about football...")
 
-
-prompt = st.chat_input("Ask a football question...")
-
+# Handle quick question buttons
 if st.session_state.quick_prompt:
     prompt = st.session_state.quick_prompt
     st.session_state.quick_prompt = None
 
-
+# ---------------- PROCESS USER INPUT ---------------- #
 
 if prompt:
 
+    # Store user message
     st.session_state.messages.append(
         {
             "role": "user",
@@ -132,28 +167,43 @@ if prompt:
         }
     )
 
+    # Display user message
     with st.chat_message("user"):
         st.markdown(prompt)
 
+    # Generate assistant response
     with st.chat_message("assistant"):
 
-        with st.spinner("⚽ Analyzing football knowledge..."):
+        with st.spinner("⚽ Thinking..."):
 
-            try:
-
-                response = get_response(
-                    st.session_state.messages
-                )
-
-            except Exception as e:
-
-                response = f"❌ Error:\n\n{e}"
+            response = get_response(st.session_state.messages)
 
             st.markdown(response)
 
+    # Save assistant response
     st.session_state.messages.append(
         {
             "role": "assistant",
             "content": response
         }
     )
+
+# ---------------- FOOTER ---------------- #
+
+st.markdown(
+    """
+    <hr style="margin-top:30px;margin-bottom:10px;">
+
+    <div style="
+        text-align:center;
+        color:#6B7280;
+        font-size:14px;
+        padding-bottom:15px;
+    ">
+
+    ⚽ Football AI Assistant • Built with Streamlit, Groq & Football-Data API
+
+    </div>
+    """,
+    unsafe_allow_html=True
+)
