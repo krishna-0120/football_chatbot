@@ -11,55 +11,26 @@ from football_api import (
 from intent import (
     detect_intent,
     detect_team,
-    detect_league
+    detect_league,
+    is_greeting,
+    is_football_question
 )
 
 client = Groq(api_key=GROQ_API_KEY)
 
 SYSTEM_PROMPT = """
-You are FootballGPT, an expert football assistant.
+You are FootballGPT, a professional football (soccer) assistant.
 
-You ONLY answer football (soccer) related questions.
-
-If a user asks anything unrelated to football,
-politely refuse by saying:
-
-"I'm sorry, but I'm designed only to answer football-related questions."
-
-Never answer non-football questions.
-
-Keep answers concise and informative.
+Rules:
+- Answer ONLY football-related questions.
+- If a question is unrelated to football, politely reply:
+  "I'm sorry, but I'm designed only to answer football-related questions."
+- Never answer questions outside football.
+- Be concise, accurate and friendly.
 """
 
 
-def is_football_query(question):
-    """Use Groq to classify whether a question is football-related."""
-
-    response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=[
-            {
-                "role": "system",
-                "content":
-                "Reply ONLY with YES or NO.\n"
-                "YES = football question.\n"
-                "NO = not football."
-            },
-            {
-                "role": "user",
-                "content": question
-            }
-        ],
-        temperature=0
-    )
-
-    answer = response.choices[0].message.content.strip().upper()
-
-    return answer.startswith("YES")
-
-
-def ask_groq(user_message):
-
+def ask_groq(question):
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=[
@@ -69,30 +40,45 @@ def ask_groq(user_message):
             },
             {
                 "role": "user",
-                "content": user_message
+                "content": question
             }
         ],
-        temperature=0.5
+        temperature=0.4
     )
 
-    return response.choices[0].message.content
+    return response.choices[0].message.content.strip()
 
 
 def get_response(messages):
 
-    user_input = messages[-1]["content"]
+    user_input = messages[-1]["content"].strip()
 
-    if not is_football_query(user_input):
+    # ---------------- Greetings ----------------
+
+    if is_greeting(user_input):
+
+        greeting = user_input.lower()
+
+        if "bye" in greeting or "goodbye" in greeting:
+            return "👋 Goodbye! Feel free to come back anytime for football news, fixtures and player information."
+
+        if "thank" in greeting:
+            return "⚽ You're welcome! Ask me anything about football."
+
+        return "⚽ Hello! I'm FootballGPT.\n\nAsk me anything about clubs, players, fixtures, standings, transfers or football history."
+
+    # ---------------- Reject non-football ----------------
+
+    if not is_football_question(user_input):
         return (
-            "⚽ I'm a Football AI Assistant and can only answer football-related questions.\n\n"
-            "You can ask me about:\n"
-            "• Players\n"
-            "• Clubs\n"
-            "• Fixtures\n"
-            "• Standings\n"
-            "• Transfers\n"
-            "• Football Rules\n"
-            "• Competitions\n"
+            "⚽ I'm a Football AI Assistant.\n\n"
+            "I can only answer football-related questions.\n\n"
+            "Examples:\n"
+            "• Tell me about Arsenal\n"
+            "• Premier League standings\n"
+            "• Barcelona next match\n"
+            "• Who is Lionel Messi?\n"
+            "• Explain the offside rule"
         )
 
     intent = detect_intent(user_input)
@@ -103,36 +89,34 @@ def get_response(messages):
 
         if intent == "team_info":
 
-            if not team:
-                return "⚠️ Please mention a supported football team."
+            if team:
+                return get_team_info(team)
 
-            return get_team_info(team)
+            return "⚽ Please mention a supported football club."
 
         elif intent == "last_matches":
 
-            if not team:
-                return "⚠️ Please mention a supported football team."
+            if team:
+                return get_last_matches(team)
 
-            return get_last_matches(team)
+            return "⚽ Please mention a supported football club."
 
         elif intent == "next_matches":
 
-            if not team:
-                return "⚠️ Please mention a supported football team."
+            if team:
+                return get_next_matches(team)
 
-            return get_next_matches(team)
+            return "⚽ Please mention a supported football club."
 
         elif intent == "standings":
 
-            if not league:
-                return "⚠️ Please mention a supported league."
+            if league:
+                return get_league_table(league)
 
-            return get_league_table(league)
+            return "⚽ Please mention a supported league."
 
+        # Everything else goes to Groq
         return ask_groq(user_input)
 
-    except Exception:
-        return (
-            "⚠️ Sorry, I couldn't retrieve that information right now.\n\n"
-            "Please try again in a few seconds."
-        )
+    except Exception as e:
+        return f"⚠️ Something went wrong.\n\n{str(e)}"

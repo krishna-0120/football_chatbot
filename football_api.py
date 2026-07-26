@@ -75,7 +75,7 @@ def get_team_info(team_name):
     if not team_id:
         return "Team not supported."
 
-    team = api_request(f"/competitions/{code}/standings")
+    team = api_request(f"/teams/{team_id}")
 
     if "error" in team:
         return f"⚠️ {team['error']}"

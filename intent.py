@@ -1,184 +1,228 @@
 import re
 
-TEAM_NAMES = [
-    "arsenal",
-    "aston villa",
-    "chelsea",
-    "everton",
-    "liverpool",
-    "manchester city",
-    "manchester united",
-    "newcastle",
-    "tottenham",
-    "fc barcelona",
-    "real madrid",
-    "atletico madrid",
-    "bayern munich",
-    "borussia dortmund",
-    "juventus",
-    "inter",
-    "milan",
-    "napoli",
-    "psg"
-]
+# -----------------------------
+# Supported Teams
+# -----------------------------
 
-LEAGUES = [
-    "premier league",
-    "la liga",
-    "bundesliga",
-    "serie a",
-    "ligue 1",
-    "champions league",
-    "europa league",
-    "conference league"
-]
+TEAM_ALIASES = {
+    "arsenal": ["arsenal"],
+    "aston villa": ["aston villa", "villa"],
+    "chelsea": ["chelsea"],
+    "everton": ["everton"],
+    "liverpool": ["liverpool"],
+    "manchester city": ["manchester city", "man city", "city"],
+    "manchester united": ["manchester united", "man utd", "man united", "united"],
+    "newcastle": ["newcastle"],
+    "tottenham": ["tottenham", "spurs"],
+    "barcelona": ["barcelona", "fc barcelona", "barca"],
+    "real madrid": ["real madrid", "madrid"],
+    "atletico madrid": ["atletico madrid", "atletico"],
+    "bayern munich": ["bayern", "bayern munich"],
+    "borussia dortmund": ["dortmund", "borussia dortmund"],
+    "juventus": ["juventus", "juve"],
+    "inter": ["inter", "inter milan"],
+    "milan": ["ac milan", "milan"],
+    "napoli": ["napoli"],
+    "psg": ["psg", "paris saint germain"]
+}
+
+# -----------------------------
+# Supported Leagues
+# -----------------------------
+
+LEAGUE_ALIASES = {
+    "premier league": [
+        "premier league",
+        "epl",
+        "english premier league"
+    ],
+    "la liga": [
+        "la liga",
+        "laliga",
+        "spanish league"
+    ],
+    "bundesliga": [
+        "bundesliga",
+        "german league"
+    ],
+    "serie a": [
+        "serie a",
+        "italian league"
+    ],
+    "ligue 1": [
+        "ligue 1",
+        "french league"
+    ],
+    "champions league": [
+        "champions league",
+        "ucl"
+    ]
+}
 
 
-def detect_team(text):
-    text = text.lower()
+# -----------------------------
+# Greetings
+# -----------------------------
 
-    teams = [
-        "arsenal",
-        "aston villa",
-        "chelsea",
-        "everton",
-        "liverpool",
-        "manchester city",
-        "manchester united",
-        "newcastle",
-        "tottenham",
-        "barcelona",
-        "real madrid",
-        "atletico madrid",
-        "bayern munich",
-        "borussia dortmund",
-        "juventus",
-        "inter",
-        "milan",
-        "napoli",
-        "psg"
+def is_greeting(text):
+
+    greetings = [
+        "hi",
+        "hello",
+        "hey",
+        "good morning",
+        "good afternoon",
+        "good evening",
+        "bye",
+        "goodbye",
+        "thanks",
+        "thank you",
+        "how are you"
     ]
 
-    for team in teams:
-        if team in text:
+    text = text.lower().strip()
+
+    return any(g in text for g in greetings)
+
+
+# -----------------------------
+# Team Detection
+# -----------------------------
+
+def detect_team(text):
+
+    text = text.lower()
+
+    for team, aliases in TEAM_ALIASES.items():
+        if any(alias in text for alias in aliases):
             return team
 
     return None
 
 
+# -----------------------------
+# League Detection
+# -----------------------------
+
 def detect_league(text):
+
     text = text.lower()
 
-    leagues = {
-        "premier league": [
-            "premier league",
-            "epl",
-            "english league"
-        ],
-        "la liga": [
-            "la liga",
-            "laliga",
-            "spanish league"
-        ],
-        "bundesliga": [
-            "bundesliga",
-            "german league"
-        ],
-        "serie a": [
-            "serie a",
-            "italian league"
-        ],
-        "ligue 1": [
-            "ligue 1",
-            "french league"
-        ],
-        "champions league": [
-            "champions league",
-            "ucl"
-        ]
-    }
-
-    for league, aliases in leagues.items():
+    for league, aliases in LEAGUE_ALIASES.items():
         if any(alias in text for alias in aliases):
             return league
 
     return None
 
 
-
+# -----------------------------
+# Intent Detection
+# -----------------------------
 
 def detect_intent(text):
-    text = text.lower().strip()
 
-    # ---------------- TEAM INFO ----------------
-    if any(word in text for word in [
-        "team info",
-        "club info",
-        "information",
-        "tell me about",
-        "about"
-    ]):
-        return "team_info"
+    text = text.lower()
 
-    # ---------------- STANDINGS ----------------
     if any(word in text for word in [
         "standings",
         "table",
         "points table",
         "league table",
-        "rankings",
         "ranking",
+        "rankings",
         "position"
     ]):
         return "standings"
 
-    # ---------------- UPCOMING MATCHES ----------------
     if any(word in text for word in [
-        "next match",
-        "next matches",
-        "fixtures",
         "fixture",
-        "schedule",
+        "fixtures",
+        "next match",
         "upcoming",
+        "schedule",
         "play next"
     ]):
         return "next_matches"
 
-    # ---------------- LAST MATCHES ----------------
     if any(word in text for word in [
         "last match",
         "last matches",
-        "recent match",
-        "recent matches",
-        "previous match",
         "results",
-        "latest results"
+        "recent matches",
+        "recent match",
+        "previous match"
     ]):
         return "last_matches"
+
+    if any(word in text for word in [
+        "team",
+        "club",
+        "stadium",
+        "coach",
+        "manager",
+        "captain",
+        "founded",
+        "about"
+    ]):
+        return "team_info"
 
     return "general"
 
 
-FOOTBALL_KEYWORDS = {
-    "football", "soccer", "fifa", "uefa", "afc", "epl", "premier league",
-    "laliga", "la liga", "bundesliga", "serie a", "ligue 1", "champions league",
-    "europa league", "world cup", "copa america", "euros",
-    "team", "club", "match", "fixture", "standings", "league",
-    "goal", "goals", "player", "coach", "manager", "captain",
-    "stadium", "transfer", "offside", "penalty", "referee",
-    "barcelona", "real madrid", "arsenal", "chelsea", "liverpool",
-    "manchester united", "manchester city", "tottenham",
-    "bayern", "psg", "juventus", "inter", "milan",
-    "ronaldo", "messi", "neymar", "mbappe", "haaland",
-    "vinicius", "bellingham", "pedri", "yamal"
-}
+# -----------------------------
+# Football Detection
+# -----------------------------
 
-def is_football_question(query: str) -> bool:
-    query = query.lower()
+FOOTBALL_TERMS = [
 
-    words = re.findall(r"\w+", query)
+    "football",
+    "soccer",
+    "fifa",
+    "uefa",
+    "goal",
+    "match",
+    "fixture",
+    "league",
+    "club",
+    "player",
+    "coach",
+    "stadium",
+    "transfer",
+    "offside",
+    "penalty",
+    "referee",
+    "world cup",
+    "champions league",
+    "premier league",
+    "la liga",
+    "bundesliga",
+    "serie a",
+    "ligue 1",
+    "messi",
+    "ronaldo",
+    "haaland",
+    "mbappe",
+    "neymar",
+    "yamal",
+    "bellingham",
+    "vinicius"
+]
 
-    return any(
-        keyword in query or keyword in words
-        for keyword in FOOTBALL_KEYWORDS
-    )
+
+def is_football_question(text):
+
+    text = text.lower()
+
+    if is_greeting(text):
+        return True
+
+    if detect_team(text):
+        return True
+
+    if detect_league(text):
+        return True
+
+    if any(term in text for term in FOOTBALL_TERMS):
+        return True
+
+    return False
