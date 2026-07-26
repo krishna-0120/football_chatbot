@@ -157,3 +157,28 @@ def detect_intent(text):
         return "last_matches"
 
     return "general"
+
+
+FOOTBALL_KEYWORDS = {
+    "football", "soccer", "fifa", "uefa", "afc", "epl", "premier league",
+    "laliga", "la liga", "bundesliga", "serie a", "ligue 1", "champions league",
+    "europa league", "world cup", "copa america", "euros",
+    "team", "club", "match", "fixture", "standings", "league",
+    "goal", "goals", "player", "coach", "manager", "captain",
+    "stadium", "transfer", "offside", "penalty", "referee",
+    "barcelona", "real madrid", "arsenal", "chelsea", "liverpool",
+    "manchester united", "manchester city", "tottenham",
+    "bayern", "psg", "juventus", "inter", "milan",
+    "ronaldo", "messi", "neymar", "mbappe", "haaland",
+    "vinicius", "bellingham", "pedri", "yamal"
+}
+
+def is_football_question(query: str) -> bool:
+    query = query.lower()
+
+    words = re.findall(r"\w+", query)
+
+    return any(
+        keyword in query or keyword in words
+        for keyword in FOOTBALL_KEYWORDS
+    )
