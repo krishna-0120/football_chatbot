@@ -2,7 +2,6 @@ import streamlit as st
 from chatbot import get_response
 from utils import export_chat
 
-# ---------------- PAGE CONFIG ---------------- #
 
 st.set_page_config(
     page_title="Football AI Assistant",
@@ -11,7 +10,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ---------------- LOAD CSS ---------------- #
 
 def load_css():
     with open("styles/style.css") as f:
@@ -22,7 +20,6 @@ def load_css():
 
 load_css()
 
-# ---------------- SESSION STATE ---------------- #
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -30,7 +27,7 @@ if "messages" not in st.session_state:
 if "quick_prompt" not in st.session_state:
     st.session_state.quick_prompt = None
 
-# ---------------- SIDEBAR ---------------- #
+
 
 with st.sidebar:
 
@@ -81,7 +78,7 @@ with st.sidebar:
         st.session_state.quick_prompt = None
         st.rerun()
 
-# ---------------- HEADER ---------------- #
+
 
 st.markdown(
     """
@@ -101,7 +98,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# ---------------- WELCOME CARD ---------------- #
 
 if len(st.session_state.messages) == 0:
 
@@ -139,27 +135,26 @@ if len(st.session_state.messages) == 0:
         unsafe_allow_html=True
     )
 
-# ---------------- CHAT HISTORY ---------------- #
+
 
 for message in st.session_state.messages:
 
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# ---------------- CHAT INPUT ---------------- #
+
 
 prompt = st.chat_input("Ask anything about football...")
 
-# Handle quick question buttons
+
 if st.session_state.quick_prompt:
     prompt = st.session_state.quick_prompt
     st.session_state.quick_prompt = None
 
-# ---------------- PROCESS USER INPUT ---------------- #
 
 if prompt:
 
-    # Store user message
+    
     st.session_state.messages.append(
         {
             "role": "user",
@@ -167,11 +162,11 @@ if prompt:
         }
     )
 
-    # Display user message
+    
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Generate assistant response
+    
     with st.chat_message("assistant"):
 
         with st.spinner("⚽ Thinking..."):
@@ -180,7 +175,7 @@ if prompt:
 
             st.markdown(response)
 
-    # Save assistant response
+    
     st.session_state.messages.append(
         {
             "role": "assistant",
@@ -188,7 +183,6 @@ if prompt:
         }
     )
 
-# ---------------- FOOTER ---------------- #
 
 st.markdown(
     """

@@ -1,9 +1,5 @@
 import re
 
-# -----------------------------
-# Supported Teams
-# -----------------------------
-
 TEAM_ALIASES = {
     "arsenal": ["arsenal"],
     "aston villa": ["aston villa", "villa"],
@@ -26,9 +22,6 @@ TEAM_ALIASES = {
     "psg": ["psg", "paris saint germain"]
 }
 
-# -----------------------------
-# Supported Leagues
-# -----------------------------
 
 LEAGUE_ALIASES = {
     "premier league": [
@@ -60,9 +53,6 @@ LEAGUE_ALIASES = {
 }
 
 
-# -----------------------------
-# Greetings
-# -----------------------------
 
 def is_greeting(text):
 
@@ -85,9 +75,7 @@ def is_greeting(text):
     return any(g in text for g in greetings)
 
 
-# -----------------------------
-# Team Detection
-# -----------------------------
+
 
 def detect_team(text):
 
@@ -100,9 +88,6 @@ def detect_team(text):
     return None
 
 
-# -----------------------------
-# League Detection
-# -----------------------------
 
 def detect_league(text):
 
@@ -115,9 +100,6 @@ def detect_league(text):
     return None
 
 
-# -----------------------------
-# Intent Detection
-# -----------------------------
 
 def detect_intent(text):
 
@@ -169,9 +151,6 @@ def detect_intent(text):
     return "general"
 
 
-# -----------------------------
-# Football Detection
-# -----------------------------
 
 FOOTBALL_TERMS = [
 

@@ -1,11 +1,8 @@
-/* ---------------- APP ---------------- */
-
 .stApp{
     background:#F5F7FB;
     color:#1F2937;
 }
 
-/* ---------------- SIDEBAR ---------------- */
 
 section[data-testid="stSidebar"]{
     background:#FFFFFF;
@@ -13,7 +10,6 @@ section[data-testid="stSidebar"]{
     padding-top:15px;
 }
 
-/* ---------------- HEADINGS ---------------- */
 
 h1{
     color:#2563EB;
@@ -24,7 +20,6 @@ h2,h3{
     color:#1F2937;
 }
 
-/* ---------------- CHAT ---------------- */
 
 .stChatMessage{
     background:#FFFFFF;
@@ -35,7 +30,6 @@ h2,h3{
     box-shadow:0 2px 8px rgba(0,0,0,.05);
 }
 
-/* ---------------- CHAT INPUT ---------------- */
 
 div[data-testid="stChatInput"]{
     background:#FFFFFF;
@@ -43,7 +37,6 @@ div[data-testid="stChatInput"]{
     border:1px solid #D1D5DB;
 }
 
-/* ---------------- BUTTONS ---------------- */
 
 .stButton>button{
     width:100%;
@@ -61,8 +54,6 @@ div[data-testid="stChatInput"]{
     transform:translateY(-2px);
 }
 
-/* ---------------- DOWNLOAD BUTTON ---------------- */
-
 .stDownloadButton>button{
     width:100%;
     border-radius:10px;
@@ -76,7 +67,6 @@ div[data-testid="stChatInput"]{
     background:#15803D;
 }
 
-/* ---------------- METRIC ---------------- */
 
 div[data-testid="stMetric"]{
     background:white;
@@ -85,13 +75,12 @@ div[data-testid="stMetric"]{
     padding:15px;
 }
 
-/* ---------------- INPUT ---------------- */
 
 input{
     border-radius:10px !important;
 }
 
-/* ---------------- SCROLLBAR ---------------- */
+
 
 ::-webkit-scrollbar{
     width:8px;
@@ -102,7 +91,6 @@ input{
     border-radius:10px;
 }
 
-/* ---------------- MOBILE ---------------- */
 
 @media (max-width:768px){
 
@@ -117,7 +105,6 @@ input{
 
 }
 
-/* ---------------- HIDE STREAMLIT ---------------- */
 
 #MainMenu{
     visibility:hidden;

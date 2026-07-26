@@ -53,7 +53,6 @@ def get_response(messages):
 
     user_input = messages[-1]["content"].strip()
 
-    # ---------------- Greetings ----------------
 
     if is_greeting(user_input):
 
@@ -67,7 +66,7 @@ def get_response(messages):
 
         return "⚽ Hello! I'm FootballGPT.\n\nAsk me anything about clubs, players, fixtures, standings, transfers or football history."
 
-    # ---------------- Reject non-football ----------------
+
 
     if not is_football_question(user_input):
         return (
@@ -115,7 +114,7 @@ def get_response(messages):
 
             return "⚽ Please mention a supported league."
 
-        # Everything else goes to Groq
+
         return ask_groq(user_input)
 
     except Exception as e:
